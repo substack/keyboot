@@ -16,7 +16,8 @@ if (keystr) {
     var settings = document.querySelector('#settings');
     classList(settings).add('show');
     loadKeys(keystr, function (err, keypair) {
-        console.log(keypair);
+        console.log(keypair.public);
+        console.log(keypair.private);
     });
 }
 else {
@@ -44,7 +45,10 @@ else {
             }
             msg.textContent = 'keypair generated';
             saveKeys('default', keypair, function (err) {
-                console.log('err=', err);
+                if (err) {
+                    console.log('err=', err);
+                    msg.textContent = String(err);
+                }
             });
         });
     });
@@ -65,11 +69,12 @@ function generate (cb) {
 }
 
 function saveKeys (profile, keypair, cb) {
-    var result = {};
     var pub = crypto.subtle.exportKey('jwk', keypair.publicKey);
+    var priv = crypto.subtle.exportKey('jwk', keypair.privateKey);
     unpromise(Promise.all([ pub, priv ]), function (err, keys) {
         if (err) return cb(err);
-        localStorage.setItem('keypair!' + profile, JSON.stringify(result));
+        var str = JSON.stringify({ public: keys[0], private: keys[1] });
+        localStorage.setItem('keypair!' + profile, str);
         cb(null, { public: keys[0], private: keys[1] });
     });
 }
