@@ -1,12 +1,38 @@
 <html>
+  <head>
+    <link rel="stylesheet" href="style.css">
+  </head>
   <body>
-    <div id="splash">
+    <div id="splash" class="page show">
+      <h1>welcome to keybear</h1>
+      <p>
+        keybear is an identity service that works offline without servers
+        using public key cryptography.
+      </p>
       
+      <p>
+        Your identity is just the hash of the public key.
+      </p>
       
+      <p>
+        To begin, generate an asymmetric keypair:
+      </p>
       
-      <button>
-        generate keypair
-      </button>
+      <div class="generate">
+        <button>
+          generate keypair
+        </button>
+        <div class="busy"></div>
+        <span class="msg"></span>
+      </div>
+      
+      <p>
+        This service is an experimental proof of concept, so don't rely on it
+        for anything sensitive or important.
+      </p>
+    </div>
+    <div id="settings" class="page">
+      ...
     </div>
     <script src="bundle.js"></script>
   </body>
