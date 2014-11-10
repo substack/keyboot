@@ -6,21 +6,9 @@ var keystr = localStorage.getItem('keypair!default');
 if (keystr) {
     var settings = document.querySelector('#settings');
     classList(settings).add('show');
-    var keyjson = JSON.parse(keystr);
-    var keypair = {
-        public: subtle.importKey(
-            'jwk', keyjson.public,
-            { name: 'RSASSA-PKCS1-v1_5', hash: { name: 'SHA-256' } },
-            true, [ 'verify' ]
-        ),
-        private: subtle.importKey(
-            'jwk', keyjson.private, 
-            { name: 'RSASSA-PKCS1-v1_5', hash: { name: 'SHA-256' } },
-            true, [ 'sign' ]
-        )
-    };
-    console.log(keypair);
-    window.keypair = keypair;
+    loadKeys(keystr, function (err, keypair) {
+        console.log(keypair);
+    });
 }
 else {
     var splash = document.querySelector('#splash');
@@ -68,32 +56,33 @@ function generate (cb) {
 }
 
 function saveKeys (profile, keypair, cb) {
-    var pending = 2, result = {};
+    var result = {};
     var pub = crypto.subtle.exportKey('jwk', keypair.publicKey);
-    unpromise(pub, function (err, key) {
-        if (err) return done(err);
-        result.public = key;
-        if (-- pending === 0) done();
-    });
-    
-    var priv = crypto.subtle.exportKey('jwk', keypair.privateKey);
-    unpromise(priv, function (err, key) {
-        if (err) return done(err);
-        result.private = key;
-        if (-- pending === 0) done();
-    });
-    
-    function done (err) {
-        if (err) { cb(err); cb = function () {} }
+    unpromise(Promise.all([ pub, priv ]), function (err, keys) {
+        if (err) return cb(err);
         localStorage.setItem('keypair!' + profile, JSON.stringify(result));
-        cb(null);
-    }
+        cb(null, { public: keys[0], private: keys[1] });
+    });
 }
 
-function abuf (str) {
-    var u16 = new Uint16Array(str.length * 2);
-    for (var i = 0; i < str.length; i++) u16[i] = str.charAt(i);
-    return new ArrayBuffer(u16);
+function loadKeys (keystr, cb) {
+    try { var keyjson = JSON.parse(keystr) }
+    catch (err) { return cb(err) }
+    
+    var pub = subtle.importKey(
+        'jwk', keyjson.public,
+        { name: 'RSASSA-PKCS1-v1_5', hash: { name: 'SHA-256' } },
+        true, [ 'verify' ]
+    );
+    var priv = subtle.importKey(
+        'jwk', keyjson.private, 
+        { name: 'RSASSA-PKCS1-v1_5', hash: { name: 'SHA-256' } },
+        true, [ 'sign' ]
+    );
+    unpromise(Promise.all([ pub, priv ]), function (err, keys) {
+        if (err) cb(err)
+        else cb(null, { public: keys[0], private: keys[1] })
+    });
 }
 
 function unpromise (p, cb) {
