@@ -1,6 +1,4 @@
 body {
-  background-color: purple;
-  color: cyan;
 }
 
 .page {
@@ -18,13 +16,32 @@ body {
   display: none;
 }
 
+#splash h1 {
+  background-color: rgb(180,100,240);
+  color: white;
+  padding: 20px;
+}
+
 #splash .generate {
-  height: 3em;
+  height: 4em;
   margin-bottom: 1em;
 }
 
 #splash .generate button {
   vertical-align: middle;
+  background-color: rgb(50,220,50);
+  padding: 15px;
+  color: white;
+  font-weight: bold;
+  font-size: 1.2em;
+  border-radius: 8px;
+  border-width: 0px;
+}
+
+#splash .generate button:hover {
+  vertical-align: middle;
+  background-color: rgb(80,240,60);
+  cursor: pointer;
 }
 
 #splash .generate .busy {
@@ -44,5 +61,5 @@ body {
 }
 
 #splash .begin {
-  color: lime;
+  color: rgb(180,100,240);
 }
