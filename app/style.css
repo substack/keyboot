@@ -57,7 +57,7 @@ body {
 }
 
 #splash .unsupported {
-  color: orange;
+  color: rgb(240,60,40);
 }
 
 #splash .begin {
