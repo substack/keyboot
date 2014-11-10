@@ -10,18 +10,16 @@ if (keystr) {
     var keypair = {
         public: subtle.importKey(
             'jwk', keyjson.public,
-            {
-                name: 'RSASSA-PKCS1-v1_5',
-                hash: { name: 'SHA-256' }
-            }, true,
-            [ 'sign', 'verify' ]
+            { name: 'RSASSA-PKCS1-v1_5', hash: { name: 'SHA-256' } },
+            true, [ 'verify' ]
         ),
         private: subtle.importKey(
             'jwk', keyjson.private, 
-            { name: 'RSASSA-PKCS1-v1_5' }, true,
-            [ 'sign', 'verify' ]
+            { name: 'RSASSA-PKCS1-v1_5', hash: { name: 'SHA-256' } },
+            true, [ 'sign' ]
         )
     };
+    console.log(keypair);
     window.keypair = keypair;
 }
 else {
