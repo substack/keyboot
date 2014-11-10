@@ -2,6 +2,15 @@ var Spinner = require('spinner-browserify');
 var classList = require('class-list');
 var subtle = (window.crypto || window.mozCrypto || window.msCrypto).subtle;
 
+if (!subtle || !subtle.generateKey || !subtle.exportKey || !subtle.importKey) {
+    classList(document.querySelector('#splash .unsupported')).remove('hide');
+    classList(document.querySelector('#splash')).add('show');
+    return;
+}
+else {
+    classList(document.querySelector('#splash .generate')).remove('hide');
+}
+
 var keystr = localStorage.getItem('keypair!default');
 if (keystr) {
     var settings = document.querySelector('#settings');

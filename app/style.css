@@ -14,6 +14,10 @@ body {
   display: block;
 }
 
+.hide {
+  display: none;
+}
+
 #splash .generate {
   height: 3em;
   margin-bottom: 1em;
@@ -33,4 +37,12 @@ body {
 #splash .generate .msg {
   vertical-align: middle;
   margin-left: 2em;
+}
+
+#splash .unsupported {
+  color: orange;
+}
+
+#splash .begin {
+  color: lime;
 }

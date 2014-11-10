@@ -14,16 +14,29 @@
         Your identity is just the hash of the public key.
       </p>
       
-      <p>
-        To begin, generate an asymmetric keypair:
-      </p>
-      
-      <div class="generate">
-        <button>
-          generate keypair
-        </button>
-        <div class="busy"></div>
-        <span class="msg"></span>
+      <div class="begin">
+        <p>
+          To begin, generate an asymmetric keypair:
+        </p>
+        
+        <div class="generate hide">
+          <button>
+            generate keypair
+          </button>
+          <div class="busy"></div>
+          <span class="msg"></span>
+        </div>
+      </div>
+      <div class="unsupported hide">
+        Sorry, your browser doesn't support web crypto.
+        You will need at least:
+        <ul>
+          <li>Internet Explorer 11</li>
+          <li>Firefox 35</li>
+          <li>Chrome 37</li>
+          <li>Safari { Desktop: 7.1, iOS: 8 }</li>
+          <li>Opera 25</li>
+        </ul>
       </div>
       
       <p>
