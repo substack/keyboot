@@ -6,8 +6,8 @@
     <div id="splash" class="page">
       <h1>welcome to keybear</h1>
       <div>
-        keybear is an identity service that works offline without servers
-        using public key cryptography.
+        keybear is a single sign-on identity service that works offline without
+        servers using public key cryptography.
       </div>
       <div>
         Your identity is just the hash of your public key.
@@ -42,9 +42,33 @@
         This service is an experimental proof of concept, so don't rely on it
         for anything sensitive or important. For unimportant things, go wild!
       </p>
+      
+      <p>
+        This application is distributed with
+        <a href="http://hyperboot.org">hyperboot</a>.
+        After the first use, the contents of this page are frozen at this
+        version. You can opt-in to upgrades by clicking the gear at the upper
+        right.
+      </p>
     </div>
     <div id="settings" class="page">
-      ...
+      <h1>keybear settings</h1>
+      
+      <h2>application requests</h2>
+      
+      <table class="requests">
+        <tr>
+          <th colspan="2">application domain</th>
+        </tr>
+      </table>
+      
+      <h2>approved applications</h2>
+      
+      <table class="approved">
+        <tr>
+          <th colspan="2">application domain</th>
+        </tr>
+      </table>
     </div>
     <script src="bundle.js"></script>
   </body>

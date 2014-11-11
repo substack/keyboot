@@ -16,7 +16,7 @@ body {
   display: none;
 }
 
-#splash h1 {
+h1 {
   background-color: rgb(180,100,240);
   color: white;
   padding: 20px;
@@ -63,3 +63,16 @@ body {
 #splash .begin {
   color: rgb(180,100,240);
 }
+
+#settings table tr:nth-child(even) {
+  background-color: red;
+}
+
+#settings table tr:nth-child(odd) {
+  background-color: yellow;
+}
+
+#settings table tr:first-child {
+  background-color: lime;
+}
+
