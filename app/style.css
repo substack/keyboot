@@ -19,9 +19,18 @@ body {
 
 .page .queue {
   max-width: 800px;
-  border: 1px solid red;
   margin: auto;
   margin-bottom: 50px;
+}
+
+.page .queue table {
+  margin-left: 20px;
+}
+
+.page .queue table th {
+  padding: 10px;
+  background-color: rgb(200,150,230);
+  color: white;
 }
 
 .show {
@@ -36,6 +45,12 @@ h1 {
   background-color: rgb(60,20,80);
   color: white;
   padding: 20px;
+}
+
+h2 {
+  color: rgb(100,40,130);
+  padding: 5px;
+  margin-left: 10px;
 }
 
 #splash .generate {
