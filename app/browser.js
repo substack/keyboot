@@ -11,16 +11,34 @@ else {
     classList(document.querySelector('#splash .generate')).remove('hide');
 }
 
-var keystr = localStorage.getItem('keypair!default');
-if (keystr) {
+var level = require('level-browserify');
+var db = level('keybear', { valueEncoding: 'json' });
+var keys = require('./keys.js')(db, subtle);
+
+keys.list(function (err, profiles) {
+    if (err) {
+        console.error(err);
+    }
+    else if (profiles.length === 0) {
+        showSplash();
+    }
+    else showSettings();
+});
+
+window.addEventListener('postMessage', function (ev) {
+    console.log('postMessage=', ev);
+});
+
+function showSettings () {
     var settings = document.querySelector('#settings');
     classList(settings).add('show');
-    loadKeys(keystr, function (err, keypair) {
+    keys.load('default', function (err, keypair) {
         console.log(keypair.public);
         console.log(keypair.private);
     });
 }
-else {
+
+function showSplash () {
     var splash = document.querySelector('#splash');
     classList(splash).add('show');
     
@@ -35,71 +53,16 @@ else {
         msg.textContent = 'Generating 4096-bit keypair. Please wait.';
         busy.appendChild(spin.el);
         
-        generate(function (err, keypair) {
+        keys.generate('default', function (err, keypair) {
             spin.stop();
             busy.removeChild(spin.el);
             if (err) {
                 console.log('err=', err);
                 msg.textContent = String(err);
-                return;
             }
-            msg.textContent = 'keypair generated';
-            saveKeys('default', keypair, function (err) {
-                if (err) {
-                    console.log('err=', err);
-                    msg.textContent = String(err);
-                }
-            });
+            else {
+                msg.textContent = 'keypair generated';
+            }
         });
     });
-}
-
-window.addEventListener('postMessage', function (ev) {
-    
-});
-
-function generate (cb) {
-    var opts = {
-        name: 'RSASSA-PKCS1-v1_5',
-        modulusLength: 4096,
-        publicExponent: new Uint8Array([ 1, 0, 1 ]),
-        hash: { name: 'SHA-256' }
-    };
-    unpromise(subtle.generateKey(opts, true, [ 'sign', 'verify' ]), cb);
-}
-
-function saveKeys (profile, keypair, cb) {
-    var pub = crypto.subtle.exportKey('jwk', keypair.publicKey);
-    var priv = crypto.subtle.exportKey('jwk', keypair.privateKey);
-    unpromise(Promise.all([ pub, priv ]), function (err, keys) {
-        if (err) return cb(err);
-        var str = JSON.stringify({ public: keys[0], private: keys[1] });
-        localStorage.setItem('keypair!' + profile, str);
-        cb(null, { public: keys[0], private: keys[1] });
-    });
-}
-
-function loadKeys (keystr, cb) {
-    try { var keyjson = JSON.parse(keystr) }
-    catch (err) { return cb(err) }
-    
-    var pub = subtle.importKey(
-        'jwk', keyjson.public,
-        { name: 'RSASSA-PKCS1-v1_5', hash: { name: 'SHA-256' } },
-        true, [ 'verify' ]
-    );
-    var priv = subtle.importKey(
-        'jwk', keyjson.private, 
-        { name: 'RSASSA-PKCS1-v1_5', hash: { name: 'SHA-256' } },
-        true, [ 'sign' ]
-    );
-    unpromise(Promise.all([ pub, priv ]), function (err, keys) {
-        if (err) cb(err)
-        else cb(null, { public: keys[0], private: keys[1] })
-    });
-}
-
-function unpromise (p, cb) {
-    p.then(function (r) { cb(null, r) });
-    p.catch(function (err) { cb(err) });
 }
