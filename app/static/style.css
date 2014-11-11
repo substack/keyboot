@@ -11,10 +11,12 @@ body {
 .page .p, .page p {
   max-width: 800px;
   margin: auto;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 .page p {
-  margin-bottom: 1em;
+  margin-bottom: 2em;
 }
 
 .page .queue {
@@ -54,7 +56,12 @@ h2 {
 }
 
 #splash .generate {
-  height: 4em;
+  margin-bottom: 1em;
+}
+
+#splash .generate .info {
+  display: inline-block;
+  margin-top: 1em;
   margin-bottom: 1em;
 }
 
