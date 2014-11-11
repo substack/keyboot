@@ -1,11 +1,27 @@
 body {
+  margin: 0px;
 }
 
 .page {
   display: none;
   margin: auto;
-  max-width: 800px;
   font-family: sans-serif;
+}
+
+.page .p, .page p {
+  max-width: 800px;
+  margin: auto;
+}
+
+.page p {
+  margin-bottom: 1em;
+}
+
+.page .queue {
+  max-width: 800px;
+  border: 1px solid red;
+  margin: auto;
+  margin-bottom: 50px;
 }
 
 .show {
@@ -17,7 +33,7 @@ body {
 }
 
 h1 {
-  background-color: rgb(180,100,240);
+  background-color: rgb(60,20,80);
   color: white;
   padding: 20px;
 }
@@ -28,27 +44,37 @@ h1 {
 }
 
 #splash .generate button {
-  vertical-align: middle;
-  background-color: rgb(50,220,50);
+  background-color: rgb(60,200,30);
   padding: 15px;
   color: white;
   font-weight: bold;
   font-size: 1.2em;
   border-radius: 8px;
   border-width: 0px;
+  margin-right: 20px;
+  margin-left: 20px;
 }
 
 #splash .generate button:hover {
-  vertical-align: middle;
-  background-color: rgb(80,240,60);
+  background-color: rgb(80,220,40);
   cursor: pointer;
+}
+
+#splash .generate > button {
+  vertical-align: middle;
 }
 
 #splash .generate .busy {
   display: inline-block;
   vertical-align: middle;
   margin-left: 2em;
+  margin-right: 1em;
   height: 3em;
+}
+
+#splash .generate .check {
+  color: rgb(60,200,30);
+  font-weight: bold;
 }
 
 #splash .generate .msg {
@@ -61,7 +87,7 @@ h1 {
 }
 
 #splash .begin {
-  color: rgb(180,100,240);
+  color: rgb(90,50,130);
 }
 
 #settings table tr:nth-child(even) {
@@ -75,4 +101,3 @@ h1 {
 #settings table tr:first-child {
   background-color: lime;
 }
-

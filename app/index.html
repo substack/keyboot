@@ -4,29 +4,35 @@
   </head>
   <body>
     <div id="splash" class="page">
-      <h1>welcome to keybear</h1>
-      <div>
+      <h1><div class="p">welcome to keybear</div></h1>
+      <div class="p">
         keybear is a single sign-on identity service that works offline without
         servers using public key cryptography.
       </div>
-      <div>
+      <div class="p">
         Your identity is just the hash of your public key.
       </div>
       
-      <div class="begin">
+      <div class="begin p">
         <h2>
           To begin, generate a public/private keypair:
         </h2>
         
-        <div class="generate hide">
+        <div class="generate hide p">
           <button>
             generate keypair
           </button>
           <div class="busy"></div>
-          <span class="msg"></span>
+          <span class="error"></span>
+          <span class="info"></span>
+          <span class="success hide">
+            <button class="continue">continue</button>
+            <span class="check">&#x2713;</span>
+            Keypair generated.
+          </span>
         </div>
       </div>
-      <div class="unsupported hide">
+      <div class="unsupported hide p">
         Sorry, your browser doesn't support web crypto.
         You will need at least:
         <ul>
@@ -52,23 +58,36 @@
       </p>
     </div>
     <div id="settings" class="page">
-      <h1>keybear settings</h1>
+      <h1><div class="p">keybear settings</div></h1>
       
-      <h2>application requests</h2>
+      <div class="queue">
+        <h2>application requests</h2>
+        <table class="requests">
+          <tr>
+            <th colspan="2">application domain</th>
+          </tr>
+        </table>
+      </div>
       
-      <table class="requests">
-        <tr>
-          <th colspan="2">application domain</th>
-        </tr>
-      </table>
+      <div class="queue">
+        <h2>approved applications</h2>
+        <table class="approved">
+          <tr>
+            <th colspan="2">application domain</th>
+          </tr>
+        </table>
+      </div>
       
-      <h2>approved applications</h2>
-      
-      <table class="approved">
-        <tr>
-          <th colspan="2">application domain</th>
-        </tr>
-      </table>
+      <div class="queue">
+        <h2>profiles</h2>
+        <table class="profiles">
+          <tr>
+            <th>name</th>
+            <th>hash</th>
+            <th></th>
+          </tr>
+        </table>
+      </div>
     </div>
     <script src="bundle.js"></script>
   </body>

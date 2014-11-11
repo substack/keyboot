@@ -42,15 +42,25 @@ function showSplash () {
     var splash = document.querySelector('#splash');
     classList(splash).add('show');
     
-    var button = document.querySelector('#splash button');
+    var busy = splash.querySelector('.busy');
+    var info = splash.querySelector('.info');
+    var err = splash.querySelector('.error');
+    var success = splash.querySelector('.success');
+    var success = splash.querySelector('.success');
+    var cont = splash.querySelector('button.continue');
+    
+    cont.addEventListener('click', function (ev) {
+        classList(splash).remove('show');
+        showSettings();
+    });
+    
+    var button = splash.querySelector('button');
     button.addEventListener('click', function (ev) {
         button.style.display = 'none';
         
         var spin = new Spinner();
         
-        var busy = document.querySelector('#splash .busy');
-        var msg = document.querySelector('#splash .msg');
-        msg.textContent = 'Generating 4096-bit keypair. Please wait.';
+        info.textContent = 'Generating 4096-bit keypair. Please wait.';
         busy.appendChild(spin.el);
         
         keys.generate('default', function (err, keypair) {
@@ -58,10 +68,13 @@ function showSplash () {
             busy.removeChild(spin.el);
             if (err) {
                 console.log('err=', err);
+                info.textContent = '';
+                error.textContent = '';
                 msg.textContent = String(err);
             }
             else {
-                msg.textContent = 'keypair generated';
+                info.textContent = '';
+                classList(success).remove('hide');
             }
         });
     });
