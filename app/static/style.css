@@ -75,6 +75,7 @@ h2 {
   border-width: 0px;
   margin-right: 20px;
   margin-left: 20px;
+  min-width: 120px;
 }
 
 #splash .generate button:hover {
