@@ -18,4 +18,5 @@ Table.prototype.add = function (row) {
         tr.appendChild(td);
     }
     this.element.appendChild(tr);
+    return tr;
 };

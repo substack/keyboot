@@ -85,6 +85,7 @@ h2 {
 
 #splash .generate > button {
   vertical-align: middle;
+  margin-bottom: 1em;
 }
 
 #splash .generate .busy {
@@ -128,6 +129,29 @@ h2 {
 
 #settings table td {
   padding: 10px;
+}
+
+#settings table.create {
+  background-color: rgb(60,200,30);
+  color: white;
+  border-radius: 5px;
+}
+
+#settings table.create th {
+  background-color: rgb(60,200,30);
+  padding-left: 15px;
+}
+
+#settings table.create td {
+  background-color: rgb(60,200,30);
+}
+
+#settings table.create button {
+  background-color: rgb(0,140,0);
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  border-width: 0px;
 }
 
 #settings table.profiles tr td:nth-child(2) {
