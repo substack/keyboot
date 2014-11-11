@@ -15,8 +15,7 @@ var level = require('level-browserify');
 var db = level('keybear', { valueEncoding: 'json' });
 var keys = require('./keys.js')(db, subtle);
 
-var Table = require('./table.js');
-var profiles = Table('#settings table.profiles')
+var profiles = require('./profiles')('#settings table.profiles')
 
 keys.list(function (err, profs) {
     if (err) {
@@ -27,7 +26,7 @@ keys.list(function (err, profs) {
     }
     else {
         profs.forEach(function (p) {
-            profiles.add([ p.name, p.hash ]);
+            profiles.add(p.name, p);
         });
         showSettings();
     }
@@ -71,7 +70,8 @@ function showSplash () {
         info.textContent = 'Generating 4096-bit keypair. Please wait.';
         busy.appendChild(spin.el);
         
-        keys.generate('default', function (err, keypair) {
+        var name = 'default';
+        keys.generate(name, function (err, keypair) {
             spin.stop();
             busy.removeChild(spin.el);
             if (err) {
@@ -83,6 +83,7 @@ function showSplash () {
             else {
                 info.textContent = '';
                 classList(success).remove('hide');
+                profiles.add(name, keypair);
             }
         });
     });

@@ -13,9 +13,9 @@ Keys.prototype.generate = function (profile, cb) {
     var self = this;
     generate(this.crypto, function (err, keypair) {
         if (err) return cb(err)
-        self.save(profile, keypair, function (err) {
+        self.save(profile, keypair, function (err, ref) {
             if (err) cb(err)
-            else cb(null, keypair)
+            else cb(null, ref)
         });
     });
 };
@@ -49,6 +49,7 @@ Keys.prototype.save = function (profile, keypair, cb) {
         var rawpub = new Uint8Array(keys[0]);
         var ref = {
             public: keys[1],
+            rawPublic: Buffer(rawpub).toString('base64'),
             private: keys[2],
             hash: createHash('sha256').update(rawpub).digest('hex')
         };
@@ -78,6 +79,7 @@ Keys.prototype.load = function (profile, cb) {
             cb(null, {
                 name: profile,
                 hash: keyjson.hash,
+                rawPublic: keyjson.rawPublic,
                 public: keys[0],
                 private: keys[1]
             });
@@ -93,7 +95,7 @@ function unpromise (p, cb) {
 function generate (crypto, cb) {
     var opts = {
         name: 'RSASSA-PKCS1-v1_5',
-        modulusLength: 1024, // 4096,
+        modulusLength: 4096,
         publicExponent: new Uint8Array([ 1, 0, 1 ]),
         hash: { name: 'SHA-256' }
     };

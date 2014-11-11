@@ -106,7 +106,8 @@ h2 {
 }
 
 #settings table tr:nth-child(even) {
-  background-color: red;
+  background-color: rgb(240,220,250);
+  color: rgb(100,40,130);
 }
 
 #settings table tr:nth-child(odd) {
@@ -115,4 +116,30 @@ h2 {
 
 #settings table tr:first-child {
   background-color: lime;
+}
+
+#settings table td {
+  padding: 10px;
+}
+
+#settings table.profiles tr td:nth-child(2) {
+  word-break: break-all;
+  font-family: monospace;
+  width: 36ex;
+}
+
+#settings .buttons button {
+  background-color: rgb(100,40,130);
+  color: white;
+  padding: 5px;
+  margin-left: 5px;
+  margin-right: 5px;
+  min-width: 50px;
+  border-radius: 5px;
+  border-width: 0px;
+}
+
+#settings .buttons button:hover {
+  background-color: rgb(140,50,170);
+  cursor: pointer;
 }
