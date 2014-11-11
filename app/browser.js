@@ -46,9 +46,6 @@ function showSettings () {
     });
 }
 
-function updateProfiles (profiles) {
-}
-
 function showSplash () {
     var splash = document.querySelector('#splash');
     classList(splash).add('show');

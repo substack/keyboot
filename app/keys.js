@@ -1,4 +1,5 @@
 var through = require('through2');
+var createHash = require('sha.js');
 
 module.exports = Keys;
 
@@ -20,17 +21,18 @@ Keys.prototype.generate = function (profile, cb) {
 };
 
 Keys.prototype.list = function (cb) {
+    var self = this;
     var s = this.db.createReadStream({ gt: 'keypair!', lt: 'keypair!~' });
     s.on('error', cb);
     s.pipe(through.obj(write, end));
     
     var rows = [];
     function write (row, enc, next) {
-        rows.push({
-            name: row.key.split('!')[1],
-            hash: 'abcdef0123456789'
+        var name = row.key.split('!')[1];
+        self.load(name, function (err, profile) {
+            rows.push(profile);
+            next();
         });
-        next();
     }
     function end () { cb(null, rows) }
 };
@@ -39,9 +41,17 @@ Keys.prototype.save = function (profile, keypair, cb) {
     var self = this;
     var pub = this.crypto.exportKey('jwk', keypair.publicKey);
     var priv = this.crypto.exportKey('jwk', keypair.privateKey);
-    unpromise(Promise.all([ pub, priv ]), function (err, keys) {
+    var rpub = this.crypto.exportKey('spki', keypair.publicKey);
+    
+    unpromise(Promise.all([ rpub, pub, priv ]), function (err, keys) {
         if (err) return cb(err);
-        var ref = { public: keys[0], private: keys[1] };
+        
+        var rawpub = new Uint8Array(keys[0]);
+        var ref = {
+            public: keys[1],
+            private: keys[2],
+            hash: createHash('sha256').update(rawpub).digest('hex')
+        };
         self.db.put('keypair!' + profile, ref, function (err) {
             if (err) cb(err)
             else cb(null, ref)
@@ -64,8 +74,13 @@ Keys.prototype.load = function (profile, cb) {
             true, [ 'sign' ]
         );
         unpromise(Promise.all([ pub, priv ]), function (err, keys) {
-            if (err) cb(err)
-            else cb(null, { public: keys[0], private: keys[1] })
+            if (err) return cb(err);
+            cb(null, {
+                name: profile,
+                hash: keyjson.hash,
+                public: keys[0],
+                private: keys[1]
+            });
         });
     });
 };
@@ -78,7 +93,7 @@ function unpromise (p, cb) {
 function generate (crypto, cb) {
     var opts = {
         name: 'RSASSA-PKCS1-v1_5',
-        modulusLength: 4096,
+        modulusLength: 1024, // 4096,
         publicExponent: new Uint8Array([ 1, 0, 1 ]),
         hash: { name: 'SHA-256' }
     };
