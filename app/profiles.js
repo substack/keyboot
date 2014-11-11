@@ -9,6 +9,7 @@ function Profiles (elem) {
 }
 
 Profiles.prototype.add = function (name, pair) {
+    /*
     var buttons = document.createElement('div');
     buttons.className = 'buttons';
     [ 'edit', 'delete' ].forEach(function (action) {
@@ -17,4 +18,6 @@ Profiles.prototype.add = function (name, pair) {
         buttons.appendChild(b);
     });
     this.table.add([ name, pair.hash, buttons ]);
+    */
+    this.table.add([ name, pair.hash ]);
 };
