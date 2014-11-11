@@ -26,7 +26,10 @@ Keys.prototype.list = function (cb) {
     
     var rows = [];
     function write (row, enc, next) {
-        rows.push(row.key.split('!')[1]);
+        rows.push({
+            name: row.key.split('!')[1],
+            hash: 'abcdef0123456789'
+        });
         next();
     }
     function end () { cb(null, rows) }

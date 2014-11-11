@@ -15,14 +15,22 @@ var level = require('level-browserify');
 var db = level('keybear', { valueEncoding: 'json' });
 var keys = require('./keys.js')(db, subtle);
 
-keys.list(function (err, profiles) {
+var Table = require('./table.js');
+var profiles = Table('#settings table.profiles')
+
+keys.list(function (err, profs) {
     if (err) {
         console.error(err);
     }
-    else if (profiles.length === 0) {
+    else if (profs.length === 0) {
         showSplash();
     }
-    else showSettings();
+    else {
+        profs.forEach(function (p) {
+            profiles.add([ p.name, p.hash ]);
+        });
+        showSettings();
+    }
 });
 
 window.addEventListener('postMessage', function (ev) {
@@ -36,6 +44,9 @@ function showSettings () {
         console.log(keypair.public);
         console.log(keypair.private);
     });
+}
+
+function updateProfiles (profiles) {
 }
 
 function showSplash () {
