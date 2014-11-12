@@ -1,5 +1,6 @@
 var Spinner = require('spinner-browserify');
 var classList = require('class-list');
+var hyperglue = require('hyperglue');
 var subtle = (window.crypto || window.mozCrypto || window.msCrypto).subtle;
 
 if (!subtle || !subtle.generateKey || !subtle.exportKey || !subtle.importKey) {
@@ -21,8 +22,15 @@ var requests = require('./table.js')('#settings table.requests')
 
 apps.requests(function (err, reqs) {
     console.log('reqs=', reqs);
+    var template = document.querySelector('*[template=request-row]');
+    
     reqs.forEach(function (req) {
-        requests.add([ req.domain, JSON.stringify(req.usages) ]);
+        var tr = hyperglue(template.cloneNode(true), {
+            '.domain': req.domain,
+            '.permissions': JSON.stringify(req.usages)
+        });
+        tr.style.display = 'table-row';
+        requests.element.appendChild(tr);
     });
 });
 

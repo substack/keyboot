@@ -12,7 +12,7 @@ Apps.prototype.saveRequest = function (req, domain, cb) {
     this.db.put('request!' + id + '!' + domain, req, cb);
 };
 
-Apps.prototype.accept = function (profile, cb) {
+Apps.prototype.approve = function (profile, cb) {
 };
 
 Apps.prototype.reject = function (profile, keypair, cb) {
