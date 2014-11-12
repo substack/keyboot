@@ -35,7 +35,7 @@ apps.requests(function (err, reqs) {
         });
         tr.querySelector('.reject').addEventListener('click', function () {
             requests.element.removeChild(tr);
-            apps.removeRequest(req.domain);
+            apps.reject(req.domain);
         });
         requests.element.appendChild(tr);
     });
@@ -56,18 +56,46 @@ keys.list(function (err, profs) {
     }
 });
 
-window.addEventListener('message', function (ev) {
+if (window.top !== window) {
+    window.addEventListener('message', onmessage);
+}
+
+function onmessage (ev) {
     if (!/^keyboot!/.test(ev.data)) return;
     try { var msg = JSON.parse(ev.data.replace(/^keyboot!/, '')) }
     catch (err) { return }
     if (!msg || typeof msg !== 'object') return;
     
     if (msg.action === 'request') {
-        apps.saveRequest(msg, ev.origin, function (err) {
-            if (err) console.error(err);
+        apps.getStatus(ev.origin, function (err, status) {
+            if (status === 'pending') {
+                reply({
+                    sequence: msg.sequence,
+                    response: 'pending'
+                });
+            }
+            else if (status === 'approved') {
+                reply({
+                    sequence: msg.sequence,
+                    response: 'approved'
+                });
+            }
+            else if (status === false) {
+                apps.saveRequest(msg, ev.origin, function (err) {
+                    if (err) console.error(err);
+                    reply({
+                        sequence: msg.sequence,
+                        response: 'pending'
+                    });
+                });
+            }
         });
     }
-});
+    
+    function reply (res) {
+        window.top.postMessage('keyboot!' + JSON.stringify(res), ev.origin);
+    }
+}
 
 function showSettings () {
     var settings = document.querySelector('#settings');
