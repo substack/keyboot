@@ -14,8 +14,17 @@ else {
 var level = require('level-browserify');
 var db = level('keybear', { valueEncoding: 'json' });
 var keys = require('./keys.js')(db, subtle);
+var apps = require('./apps.js')(db);
 
-var profiles = require('./profiles')('#settings table.profiles')
+var profiles = require('./profiles.js')('#settings table.profiles')
+var requests = require('./table.js')('#settings table.requests')
+
+apps.requests(function (err, reqs) {
+    console.log('reqs=', reqs);
+    reqs.forEach(function (req) {
+        requests.add([ req.domain, JSON.stringify(req.usages) ]);
+    });
+});
 
 keys.list(function (err, profs) {
     if (err) {
@@ -32,16 +41,25 @@ keys.list(function (err, profs) {
     }
 });
 
-window.addEventListener('postMessage', function (ev) {
-    console.log('postMessage=', ev);
+window.addEventListener('message', function (ev) {
+    if (!/^keyboot!/.test(ev.data)) return;
+    try { var msg = JSON.parse(ev.data.replace(/^keyboot!/, '')) }
+    catch (err) { return }
+    if (!msg || typeof msg !== 'object') return;
+    
+    if (msg.action === 'request') {
+        apps.saveRequest(msg, ev.origin, function (err) {
+            if (err) console.error(err);
+        });
+    }
 });
 
 function showSettings () {
     var settings = document.querySelector('#settings');
     classList(settings).add('show');
     keys.load('default', function (err, keypair) {
-        console.log(keypair.public);
-        console.log(keypair.private);
+        //console.log(keypair.public);
+        //console.log(keypair.private);
     });
 }
 
