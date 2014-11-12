@@ -27,9 +27,16 @@ apps.requests(function (err, reqs) {
     reqs.forEach(function (req) {
         var tr = hyperglue(template.cloneNode(true), {
             '.domain': req.domain,
-            '.permissions': JSON.stringify(req.usages)
+            '.permissions': JSON.stringify(req.permissions)
         });
         tr.style.display = 'table-row';
+        tr.querySelector('.approve').addEventListener('click', function () {
+            // ...
+        });
+        tr.querySelector('.reject').addEventListener('click', function () {
+            requests.element.removeChild(tr);
+            apps.removeRequest(req.domain);
+        });
         requests.element.appendChild(tr);
     });
 });
