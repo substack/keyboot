@@ -19,20 +19,16 @@ var keys = require('./keys.js')(db, subtle);
 var apps = require('./apps.js')(db, bus);
 
 bus.on('approve', function (req) {
-console.log('APPROVE', req);
     requests.remove(req.domain);
     approved.add(req.domain, [ req.domain ]);
 });
 
 bus.on('reject', function (req) {
-console.log('REJECT');
     requests.remove(req);
 });
 
 bus.on('request', function (req) {
-console.log('REQUEST', req);
-    requests.add(req.domain, req);
-    apps.reject(req.domain);
+    requests.add(req);
 });
 
 var profiles = require('./profiles.js')('#settings table.profiles');
@@ -53,6 +49,12 @@ requests.on('reject', function (req) {
 
 apps.requests(function (err, reqs) {
     reqs.forEach(function (req) { requests.add(req) });
+});
+
+apps.approved('default', function (err, xapps) {
+    xapps.forEach(function (x) {
+        approved.add(x.domain, [ x.domain, x.profile ]);
+    });
 });
 
 keys.list(function (err, profs) {

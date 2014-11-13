@@ -60,7 +60,10 @@ Apps.prototype.reject = function (req, cb) {
 };
 
 Apps.prototype.approve = function (req, profile, cb) {
-    this.db.put('app!' + req.domain, profile, cb);
+    this.db.put('app!' + req.domain, {
+        permissions: req.permissions,
+        profile: profile
+    }, cb);
     this.bus.emit('approve', req);
 };
 
@@ -88,7 +91,8 @@ Apps.prototype.approved = function (profile, cb) {
     var rows = [];
     function write (row, enc, next) {
         rows.push({
-            
+            domain: row.key.split('!')[1],
+            profile: row.value
         });
         next();
     }
