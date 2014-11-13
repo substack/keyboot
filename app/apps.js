@@ -2,10 +2,45 @@ var through = require('through2');
 
 module.exports = Apps;
 
-function Apps (db) {
-    if (!(this instanceof Apps)) return new Apps(db);
+function Apps (db, bus) {
+    if (!(this instanceof Apps)) return new Apps(db, bus);
     this.db = db;
+    this.bus = bus;
 }
+
+Apps.prototype.handle = function (msg, origin) {
+    var self = this;
+    if (msg.action === 'request') {
+        self.getStatus(origin, onstatus);
+    }
+    function onstatus (err, status) {
+        if (status === 'pending') {
+            reply({
+                sequence: msg.sequence,
+                response: 'pending'
+            });
+        }
+        else if (status === 'approved') {
+            reply({
+                sequence: msg.sequence,
+                response: 'approved'
+            });
+        }
+        else if (status === false) {
+            msg.domain = origin;
+            self.saveRequest(msg, origin, function (err) {
+                if (err) console.error(err);
+                reply({
+                    sequence: msg.sequence,
+                    response: 'pending'
+                });
+            });
+        }
+    }
+    function reply (res) {
+        window.top.postMessage('keyboot!' + JSON.stringify(res), origin);
+    }
+};
 
 Apps.prototype.getStatus = function (domain, cb) {
     this.db.get('request!' + domain, function (err, res) {
@@ -16,14 +51,17 @@ Apps.prototype.getStatus = function (domain, cb) {
 
 Apps.prototype.saveRequest = function (req, domain, cb) {
     this.db.put('request!' + domain, req, cb);
+    this.bus.emit('request', req);
 };
 
-Apps.prototype.reject = function (domain, cb) {
-    this.db.del('request!' + domain, cb);
+Apps.prototype.reject = function (req, cb) {
+    this.db.del('request!' + req.domain, cb);
+    this.bus.emit('reject', req);
 };
 
-Apps.prototype.approve = function (domain, profile, cb) {
-    this.db.put('app!' + domain, profile, cb);
+Apps.prototype.approve = function (req, profile, cb) {
+    this.db.put('app!' + req.domain, profile, cb);
+    this.bus.emit('approve', req);
 };
 
 Apps.prototype.requests = function (cb) {

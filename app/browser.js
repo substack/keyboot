@@ -1,6 +1,5 @@
 var Spinner = require('spinner-browserify');
 var classList = require('class-list');
-var hyperglue = require('hyperglue');
 var subtle = (window.crypto || window.mozCrypto || window.msCrypto).subtle;
 
 if (!subtle || !subtle.generateKey || !subtle.exportKey || !subtle.importKey) {
@@ -12,33 +11,48 @@ else {
     classList(document.querySelector('#splash .generate')).remove('hide');
 }
 
+var bus = require('page-bus')();
 var level = require('level-browserify');
 var db = level('keybear', { valueEncoding: 'json' });
-var keys = require('./keys.js')(db, subtle);
-var apps = require('./apps.js')(db);
 
-var profiles = require('./profiles.js')('#settings table.profiles')
-var requests = require('./table.js')('#settings table.requests')
+var keys = require('./keys.js')(db, subtle);
+var apps = require('./apps.js')(db, bus);
+
+bus.on('approve', function (req) {
+console.log('APPROVE', req);
+    requests.remove(req.domain);
+    approved.add(req.domain, [ req.domain ]);
+});
+
+bus.on('reject', function (req) {
+console.log('REJECT');
+    requests.remove(req);
+});
+
+bus.on('request', function (req) {
+console.log('REQUEST', req);
+    requests.add(req.domain, req);
+    apps.reject(req.domain);
+});
+
+var profiles = require('./profiles.js')('#settings table.profiles');
+var requests = require('./requests.js')('#settings table.requests');
+var approved = require('./table.js')('#settings table.approved');
+
+requests.on('approve', function (req) {
+    apps.approve(req, 'default');
+});
+
+bus.on('whatever', function (x) {
+    console.log('x=', x);
+});
+
+requests.on('reject', function (req) {
+    apps.reject(req);
+});
 
 apps.requests(function (err, reqs) {
-    console.log('reqs=', reqs);
-    var template = document.querySelector('*[template=request-row]');
-    
-    reqs.forEach(function (req) {
-        var tr = hyperglue(template.cloneNode(true), {
-            '.domain': req.domain,
-            '.permissions': JSON.stringify(req.permissions)
-        });
-        tr.style.display = 'table-row';
-        tr.querySelector('.approve').addEventListener('click', function () {
-            // ...
-        });
-        tr.querySelector('.reject').addEventListener('click', function () {
-            requests.element.removeChild(tr);
-            apps.reject(req.domain);
-        });
-        requests.element.appendChild(tr);
-    });
+    reqs.forEach(function (req) { requests.add(req) });
 });
 
 keys.list(function (err, profs) {
@@ -65,36 +79,7 @@ function onmessage (ev) {
     try { var msg = JSON.parse(ev.data.replace(/^keyboot!/, '')) }
     catch (err) { return }
     if (!msg || typeof msg !== 'object') return;
-    
-    if (msg.action === 'request') {
-        apps.getStatus(ev.origin, function (err, status) {
-            if (status === 'pending') {
-                reply({
-                    sequence: msg.sequence,
-                    response: 'pending'
-                });
-            }
-            else if (status === 'approved') {
-                reply({
-                    sequence: msg.sequence,
-                    response: 'approved'
-                });
-            }
-            else if (status === false) {
-                apps.saveRequest(msg, ev.origin, function (err) {
-                    if (err) console.error(err);
-                    reply({
-                        sequence: msg.sequence,
-                        response: 'pending'
-                    });
-                });
-            }
-        });
-    }
-    
-    function reply (res) {
-        window.top.postMessage('keyboot!' + JSON.stringify(res), ev.origin);
-    }
+    apps.handle(msg, ev.origin);
 }
 
 function showSettings () {

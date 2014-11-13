@@ -1,5 +1,4 @@
 var Table = require('./table.js');
-var inherits = require('inherits');
 
 module.exports = Profiles;
 
@@ -19,5 +18,5 @@ Profiles.prototype.add = function (name, pair) {
     });
     this.table.add([ name, pair.hash, buttons ]);
     */
-    this.table.add([ name, pair.hash ]);
+    this.table.add(name, [ name, pair.hash ]);
 };
