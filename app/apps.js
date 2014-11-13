@@ -78,11 +78,23 @@ Apps.prototype.reject = function (req, cb) {
 };
 
 Apps.prototype.approve = function (req, profile, cb) {
-    this.db.put('app!' + req.domain, {
-        permissions: req.permissions,
-        profile: profile
-    }, cb);
-    this.bus.emit('approve', req);
+    if (!cb) cb = function () {};
+    var self = this;
+    this.db.batch([
+        {
+            type: 'put',
+            key: 'app!' + req.domain + '!' + profile,
+            value: { permissions: req.permissions }
+        },
+        { type: 'del', key: 'request!' + req.domain }
+    ], done);
+    function done (err) {
+        if (err) cb(err)
+        else {
+            cb(null);
+            self.bus.emit('approve', req);
+        }
+    }
 };
 
 Apps.prototype.requests = function (cb) {
@@ -110,7 +122,8 @@ Apps.prototype.approved = function (profile, cb) {
     function write (row, enc, next) {
         rows.push({
             domain: row.key.split('!')[1],
-            profile: row.value
+            profile: row.key.split('!')[2],
+            permissions: row.value.permissions
         });
         next();
     }
