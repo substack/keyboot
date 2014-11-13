@@ -18,8 +18,19 @@ var db = level('keybear', { valueEncoding: 'json' });
 var keys = require('./keys.js')(db, subtle);
 var apps = require('./apps.js')(db, bus);
 
+if (window.parent !== window) {
+    window.addEventListener('message', function (ev) {
+        if (!/^keyboot!/.test(ev.data)) return;
+        try { var msg = JSON.parse(ev.data.replace(/^keyboot!/, '')) }
+        catch (err) { return }
+        if (!msg || typeof msg !== 'object') return;
+        apps.handle(msg, ev.origin);
+    });
+    return;
+}
+
 bus.on('approve', function (req) {
-    requests.remove(req.domain);
+    requests.remove(req);
     approved.add(req.domain, [ req.domain ]);
 });
 
@@ -37,10 +48,6 @@ var approved = require('./table.js')('#settings table.approved');
 
 requests.on('approve', function (req) {
     apps.approve(req, 'default');
-});
-
-bus.on('whatever', function (x) {
-    console.log('x=', x);
 });
 
 requests.on('reject', function (req) {
@@ -71,18 +78,6 @@ keys.list(function (err, profs) {
         showSettings();
     }
 });
-
-if (window.top !== window) {
-    window.addEventListener('message', onmessage);
-}
-
-function onmessage (ev) {
-    if (!/^keyboot!/.test(ev.data)) return;
-    try { var msg = JSON.parse(ev.data.replace(/^keyboot!/, '')) }
-    catch (err) { return }
-    if (!msg || typeof msg !== 'object') return;
-    apps.handle(msg, ev.origin);
-}
 
 function showSettings () {
     var settings = document.querySelector('#settings');

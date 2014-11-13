@@ -36,9 +36,27 @@ Apps.prototype.handle = function (msg, origin) {
                 });
             });
         }
+        self.bus.on('approve', function f (req) {
+            if (req.domain === origin) {
+                reply({
+                    sequence: msg.sequence,
+                    response: 'approved'
+                });
+                self.bus.removeListener('approve', f);
+            }
+        });
+        self.bus.on('reject', function f (req) {
+            if (req.domain === origin) {
+                reply({
+                    sequence: msg.sequence,
+                    response: 'rejected'
+                });
+                self.bus.removeListener('reject', f);
+            }
+        });
     }
     function reply (res) {
-        window.top.postMessage('keyboot!' + JSON.stringify(res), origin);
+        window.parent.postMessage('keyboot!' + JSON.stringify(res), origin);
     }
 };
 
