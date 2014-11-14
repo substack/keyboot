@@ -180,3 +180,32 @@ h2 {
   background-color: rgb(140,50,170);
   cursor: pointer;
 }
+
+#settings table button {
+  color: white;
+  font-weight: bold;
+  padding: 8px;
+  border-radius: 5px;
+  border-width: 0px;
+  min-width: 80px;
+}
+
+#settings table button:hover {
+  cursor: pointer;
+}
+
+#settings table button.green {
+  background-color: rgb(80,200,80);
+}
+
+#settings table button.green:hover {
+  background-color: rgb(20,220,20);
+}
+
+#settings table button.red {
+  background-color: rgb(220,100,60);
+}
+
+#settings table button.red:hover {
+  background-color: rgb(230,30,20);
+}
