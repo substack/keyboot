@@ -1,4 +1,5 @@
 var through = require('through2');
+var isarray = require('isarray');
 
 module.exports = Apps;
 
@@ -7,64 +8,6 @@ function Apps (db, bus) {
     this.db = db;
     this.bus = bus;
 }
-
-Apps.prototype.handle = function (msg, origin) {
-    var self = this;
-    if (msg.action === 'request') {
-        self.getStatus(origin, onstatus);
-    }
-    function onstatus (err, status) {
-        if (status === 'pending') {
-            reply({
-                sequence: msg.sequence,
-                response: 'pending'
-            });
-        }
-        else if (status === 'approved') {
-            reply({
-                sequence: msg.sequence,
-                response: 'approved'
-            });
-        }
-        else if (status === false) {
-            msg.domain = origin;
-            self.saveRequest(msg, origin, function (err) {
-                if (err) console.error(err);
-                reply({
-                    sequence: msg.sequence,
-                    response: 'pending'
-                });
-            });
-        }
-        self.bus.on('approve', function f (req) {
-            if (req.domain === origin) {
-                reply({
-                    sequence: msg.sequence,
-                    response: 'approved'
-                });
-            }
-        });
-        self.bus.on('reject', function f (req) {
-            if (req.domain === origin) {
-                reply({
-                    sequence: msg.sequence,
-                    response: 'rejected'
-                });
-            }
-        });
-        self.bus.on('revoke', function f (req) {
-            if (req.domain === origin) {
-                reply({
-                    sequence: msg.sequence,
-                    response: 'revoke'
-                });
-            }
-        });
-    }
-    function reply (res) {
-        window.parent.postMessage('keyboot!' + JSON.stringify(res), origin);
-    }
-};
 
 Apps.prototype.getStatus = function (domain, cb) {
     var self = this;
@@ -75,6 +18,10 @@ Apps.prototype.getStatus = function (domain, cb) {
             else cb(null, false)
         });
     });
+};
+
+Apps.prototype.get = function (domain, cb) {
+    this.db.get('app!' + domain, cb)
 };
 
 Apps.prototype.saveRequest = function (req, domain, cb) {
@@ -89,6 +36,10 @@ Apps.prototype.reject = function (req, cb) {
 
 Apps.prototype.approve = function (req, profile, cb) {
     if (!cb) cb = function () {};
+    if (!isarray(req.permissions)) {
+        return cb(new Error('invalid value for permissions'));
+    }
+    
     var self = this;
     this.db.batch([
         {

@@ -17,6 +17,7 @@ var db = level('keybear', { valueEncoding: 'json' });
 
 var keys = require('./keys.js')(db, bus, subtle);
 var apps = require('./apps.js')(db, bus);
+var rpc = require('./rpc.js')(bus, apps, keys, subtle);
 
 if (window.parent !== window) {
     window.addEventListener('message', function (ev) {
@@ -24,7 +25,7 @@ if (window.parent !== window) {
         try { var msg = JSON.parse(ev.data.replace(/^keyboot!/, '')) }
         catch (err) { return }
         if (!msg || typeof msg !== 'object') return;
-        apps.handle(msg, ev.origin);
+        rpc.handle(msg, ev.origin);
     });
     return;
 }

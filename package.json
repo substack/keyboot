@@ -16,7 +16,8 @@
     "page-bus": "~1.0.2",
     "sha.js": "~2.2.7",
     "spinner-browserify": "~0.1.0",
-    "through2": "~0.6.3"
+    "through2": "~0.6.3",
+    "isarray": "~0.0.1"
   },
   "devDependencies": {
     "tape": "^3.0.0"
