@@ -3,9 +3,10 @@ var createHash = require('sha.js');
 
 module.exports = Keys;
 
-function Keys (db, crypto) {
-    if (!(this instanceof Keys)) return new Keys(db, crypto);
+function Keys (db, bus, crypto) {
+    if (!(this instanceof Keys)) return new Keys(db, bus, crypto);
     this.db = db;
+    this.bus = bus;
     this.crypto = crypto;
 }
 
@@ -84,6 +85,15 @@ Keys.prototype.load = function (profile, cb) {
                 private: keys[1]
             });
         });
+    });
+};
+
+Keys.prototype.remove = function (pair) {
+    var self = this;
+    this.db.del('keypair!' + pair.name, function (err) {
+        if (err) return cb(err);
+        self.bus.emit('remove', pair);
+        cb(null);
     });
 };
 

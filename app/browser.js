@@ -15,7 +15,7 @@ var bus = require('page-bus')();
 var level = require('level-browserify');
 var db = level('keybear', { valueEncoding: 'json' });
 
-var keys = require('./keys.js')(db, subtle);
+var keys = require('./keys.js')(db, bus, subtle);
 var apps = require('./apps.js')(db, bus);
 
 if (window.parent !== window) {
@@ -46,7 +46,14 @@ bus.on('request', function (req) {
     requests.add(req);
 });
 
+bus.on('remove', function (pair) {
+    profiles.remove(pair);
+});
+
 var profiles = require('./profiles.js')('#settings table.profiles');
+profiles.on('remove', function (pair) {
+    keys.remove(pair);
+});
 
 var requests = require('./requests.js')('#settings table.requests');
 requests.on('approve', function (req) {
@@ -79,7 +86,7 @@ keys.list(function (err, profs) {
     }
     else {
         profs.forEach(function (p) {
-            profiles.add(p.name, p);
+            profiles.add(p);
         });
         showSettings();
     }
