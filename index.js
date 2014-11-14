@@ -1,6 +1,7 @@
 var EventEmitter = require('events').EventEmitter;
 var inherits = require('inherits');
 var defined = require('defined');
+var has = require('has');
 
 module.exports = KB;
 inherits(KB, EventEmitter);
@@ -25,18 +26,15 @@ function KB (href, opts) {
     });
     
     window.addEventListener('message', function (ev) {
-        if (!/^keyboot!/.test(ev.data)) return;
-        try { var data = JSON.parse(ev.data.replace(/^keyboot!/, '')) }
-        catch (err) { return }
-        self._onmessage(data);
+        if (!ev.data || typeof ev.data !== 'object') return;
+        if (!has(ev.data, 'keyboot')) return;
+        if (!ev.data.keyboot || typeof ev.data.keyboot !== 'object') return;
+        self._onmessage(ev.data.keyboot);
     });
 }
 
 KB.prototype._post = function (request) {
-    this.frame.contentWindow.postMessage(
-        'keyboot!' + JSON.stringify(request),
-        this.href
-    );
+    this.frame.contentWindow.postMessage({ keyboot: request }, this.href);
 };
 
 KB.prototype._onmessage = function (data) {

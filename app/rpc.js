@@ -33,28 +33,35 @@ RPC.prototype.handle = function (msg, origin) {
                     response: 'error',
                     message: err.message
                 });
-console.log('keys=', keys); 
+                var algo = {
+                    name: 'RSASSA-PKCS1-v1_5',
+                    hash: 'SHA-256'
+                };
+                
+                var buf = new Buffer(msg.data);
+                var data = new Uint8Array(buf.length);
+                for (var i = 0; i < buf.length; i++) {
+                    data[i] = buf[i];
+                }
+                
                 try {
-                handleSign(self.subtle.sign(
-                    'RSA-256',
-                    keys.private,
-                    msg.data
-                ));
-                } catch (e) { console.error(e) }
+                    handleSign(self.subtle.sign(
+                        algo, keys.private, data
+                    ));
+                }
+                catch (e) { console.error(e) }
             });
         });
     }
     
     function handleSign (sign) {
         sign.then(function (result) {
-            console.log('RESULT=', result);
-            /*
+            // TODO: add domain wrapper
             reply({
                sequence: msg.sequence,
                response: 'ok',
-               result: wrapper('...') // wrapper to prevent replay attacks
+               result: new Uint8Array(result)
             })
-            */
         });
         sign.catch(function (err) {
             console.error('SIGNING ERROR', err);
@@ -110,6 +117,6 @@ console.log('keys=', keys);
         });
     }
     function reply (res) {
-        window.parent.postMessage('keyboot!' + JSON.stringify(res), origin);
+        window.parent.postMessage({ keyboot: res }, origin);
     }
 };

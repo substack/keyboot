@@ -14,6 +14,7 @@ else {
 var bus = require('page-bus')();
 var level = require('level-browserify');
 var db = level('keybear', { valueEncoding: 'json' });
+var has = require('has');
 
 var keys = require('./keys.js')(db, bus, subtle);
 var apps = require('./apps.js')(db, bus);
@@ -21,11 +22,9 @@ var rpc = require('./rpc.js')(bus, apps, keys, subtle);
 
 if (window.parent !== window) {
     window.addEventListener('message', function (ev) {
-        if (!/^keyboot!/.test(ev.data)) return;
-        try { var msg = JSON.parse(ev.data.replace(/^keyboot!/, '')) }
-        catch (err) { return }
-        if (!msg || typeof msg !== 'object') return;
-        rpc.handle(msg, ev.origin);
+        if (!ev.data || !has(ev.data, 'keyboot')) return;
+        if (!ev.data.keyboot || typeof ev.data.keyboot !== 'object') return;
+        rpc.handle(ev.data.keyboot, ev.origin);
     });
     return;
 }
