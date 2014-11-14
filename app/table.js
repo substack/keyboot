@@ -1,12 +1,17 @@
+var has = require('has');
+
 module.exports = Table;
 
 function Table (elem) {
     if (!(this instanceof Table)) return new Table(elem);
     if (typeof elem === 'string') elem = document.querySelector(elem);
     this.element = elem;
+    this.rows = {};
 }
 
 Table.prototype.add = function (key, row) {
+    if (has(this.rows, key)) return this.rows[key];
+    
     var tr;
     if (row && typeof row === 'object' && row instanceof HTMLElement) {
         tr = row;
@@ -23,12 +28,14 @@ Table.prototype.add = function (key, row) {
             tr.appendChild(td);
         }
     }
-    tr.setAttribute('x-key', key);
+    this.rows[key] = tr;
     this.element.appendChild(tr);
     return tr;
 };
 
 Table.prototype.remove = function (key) {
-    var tr = this.element.querySelector('tr[x-key="' + key + '"]');
-    if (tr) this.element.removeChild(tr);
+    if (!has(this.rows, key)) return false;
+    this.element.removeChild(this.rows[key]);
+    delete this.rows[key];
+    return true;
 };
