@@ -35,7 +35,7 @@ body {
 
 .page .queue table th {
   padding: 10px;
-  background-color: rgb(200,150,230);
+  background-color: rgb(160,110,200);
   color: white;
 }
 
@@ -118,17 +118,18 @@ h2 {
   color: rgb(90,50,130);
 }
 
+#settings table tr th {
+  min-width: 80px;
+}
+
 #settings table tr:nth-child(even) {
   background-color: rgb(240,220,250);
   color: rgb(100,40,130);
 }
 
 #settings table tr:nth-child(odd) {
-  background-color: yellow;
-}
-
-#settings table tr:first-child {
-  background-color: lime;
+  background-color: rgb(210,180,220);
+  color: rgb(100,40,130);
 }
 
 #settings table td {
