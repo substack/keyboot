@@ -11,7 +11,7 @@ function RPC (bus, apps, keys, subtle) {
 RPC.prototype.handle = function (msg, origin) {
     var self = this;
     if (msg.action === 'request') {
-        self.getStatus(origin, onstatus);
+        self.apps.getStatus(origin, onstatus);
     }
     else if (msg.action === 'sign') {
         self.apps.get(origin, function (err, value) {
@@ -33,10 +33,14 @@ RPC.prototype.handle = function (msg, origin) {
                     response: 'error',
                     message: err.message
                 });
+console.log('keys=', keys); 
+                try {
                 handleSign(self.subtle.sign(
+                    'RSA-256',
                     keys.private,
-                    'RSA-256'
+                    msg.data
                 ));
+                } catch (e) { console.error(e) }
             });
         });
     }
@@ -47,10 +51,13 @@ RPC.prototype.handle = function (msg, origin) {
             /*
             reply({
                sequence: msg.sequence,
-               response: '',
-               message: ''
+               response: 'ok',
+               result: wrapper('...') // wrapper to prevent replay attacks
             })
             */
+        });
+        sign.catch(function (err) {
+            console.error('SIGNING ERROR', err);
         });
     }
     

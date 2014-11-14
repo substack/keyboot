@@ -13,42 +13,64 @@ function KB (href, opts) {
     
     var perms = defined(opts.permissions, []);
     this.sequence = 0;
+    this.href = href;
     
     var seq = this.sequence;
     this.frame = createIframe(href, function (frame) {
-        var request = {
+        self._post({
             sequence: seq,
             action: 'request',
             permissions: perms
-        };
-        frame.contentWindow.postMessage(
-            'keyboot!' + JSON.stringify(request), href
-        );
+        });
     });
     
     window.addEventListener('message', function (ev) {
         if (!/^keyboot!/.test(ev.data)) return;
         try { var data = JSON.parse(ev.data.replace(/^keyboot!/, '')) }
         catch (err) { return }
-        if (data.sequence !== seq) return;
-        
-        if (data.response === 'approved') {
-            self.emit('approve');
-        }
-        else if (data.response === 'rejected') {
-            self.emit('reject');
-        }
-        else if (data.response === 'pending') {
-            self.emit('pending');
-        }
-        else if (data.response === 'revoke') {
-            self.emit('revoke');
-        }
+        self._onmessage(data);
     });
 }
 
-KB.prototype.sign = function (cb) {
-    // todo
+KB.prototype._post = function (request) {
+    this.frame.contentWindow.postMessage(
+        'keyboot!' + JSON.stringify(request),
+        this.href
+    );
+};
+
+KB.prototype._onmessage = function (data) {
+    if (data.sequence === 0) {
+        if (data.response === 'approved') {
+            this.emit('approve');
+        }
+        else if (data.response === 'rejected') {
+            this.emit('reject');
+        }
+        else if (data.response === 'pending') {
+            this.emit('pending');
+        }
+        else if (data.response === 'revoke') {
+            this.emit('revoke');
+        }
+        return;
+    }
+    else this.emit('reply_' + data.sequence, data);
+};
+
+KB.prototype.sign = function (text, cb) {
+    var seq = ++ this.sequence;
+    this.once('reply_' + seq, function (data) {
+        if (data.response === 'error') {
+            cb(data.message)
+        }
+        else cb(null, data.result)
+    });
+    this._post({
+        action: 'sign',
+        sequence: seq,
+        data: text
+    });
 };
 
 KB.prototype.id = function (cb) {
