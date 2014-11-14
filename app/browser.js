@@ -34,7 +34,7 @@ bus.on('approve', function (req) {
     approved.add(req);
 });
 
-bus.on('remove', function (app) {
+bus.on('revoke', function (app) {
     approved.remove(app);
 });
 
@@ -58,8 +58,8 @@ requests.on('reject', function (req) {
 });
 
 var approved = require('./approved.js')('#settings table.approved');
-approved.on('remove', function (app) {
-    apps.remove(app);
+approved.on('revoke', function (app) {
+    apps.revoke(app);
 });
 
 apps.requests(function (err, reqs) {

@@ -21,8 +21,8 @@ Approved.prototype.add = function (app) {
         '.profile select': { selected: app.profile }
     });
     tr.style.display = 'table-row';
-    tr.querySelector('button.remove').addEventListener('click', function () {
-        self.emit('remove', app);
+    tr.querySelector('button.revoke').addEventListener('click', function () {
+        self.emit('revoke', app);
     });
     self.table.add(app.domain, tr);
 };

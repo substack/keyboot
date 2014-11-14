@@ -42,7 +42,6 @@ Apps.prototype.handle = function (msg, origin) {
                     sequence: msg.sequence,
                     response: 'approved'
                 });
-                self.bus.removeListener('approve', f);
             }
         });
         self.bus.on('reject', function f (req) {
@@ -51,7 +50,14 @@ Apps.prototype.handle = function (msg, origin) {
                     sequence: msg.sequence,
                     response: 'rejected'
                 });
-                self.bus.removeListener('reject', f);
+            }
+        });
+        self.bus.on('revoke', function f (req) {
+            if (req.domain === origin) {
+                reply({
+                    sequence: msg.sequence,
+                    response: 'revoke'
+                });
             }
         });
     }
@@ -104,13 +110,13 @@ Apps.prototype.approve = function (req, profile, cb) {
     }
 };
 
-Apps.prototype.remove = function (req, cb) {
+Apps.prototype.revoke = function (req, cb) {
     if (!cb) cb = function () {};
     var self = this;
     self.db.del('app!' + req.domain, function (err) {
-        if (err) return cb(err)
+        if (err) return cb(err);
         cb(null);
-        self.bus.emit('remove', req);
+        self.bus.emit('revoke', req);
     });
 };
 
