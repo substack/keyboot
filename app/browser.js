@@ -139,7 +139,7 @@ function showSplash () {
             else {
                 info.textContent = '';
                 classList(success).remove('hide');
-                profiles.add(name, keypair);
+                profiles.add(keypair);
             }
         });
     });
