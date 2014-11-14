@@ -104,6 +104,16 @@ Apps.prototype.approve = function (req, profile, cb) {
     }
 };
 
+Apps.prototype.remove = function (req, cb) {
+    if (!cb) cb = function () {};
+    var self = this;
+    self.db.del('app!' + req.domain, function (err) {
+        if (err) return cb(err)
+        cb(null);
+        self.bus.emit('remove', req);
+    });
+};
+
 Apps.prototype.requests = function (cb) {
     var s = this.db.createReadStream({ gt: 'request!', lt: 'request!~' });
     s.on('error', cb);

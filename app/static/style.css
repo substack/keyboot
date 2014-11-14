@@ -2,6 +2,10 @@ body {
   margin: 0px;
 }
 
+*[template] {
+  display: none;
+}
+
 .page {
   display: none;
   margin: auto;

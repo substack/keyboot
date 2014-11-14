@@ -10,7 +10,7 @@ function Requests (elem) {
     if (!(this instanceof Requests)) return new Requests(elem);
     EventEmitter.call(this);
     this.table = new Table(elem);
-    this.template = this.table.element.querySelector('*[template=request-row]');
+    this.template = this.table.element.querySelector('*[template=request]');
 }
 
 Requests.prototype.add = function (req) {

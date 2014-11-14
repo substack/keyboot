@@ -31,7 +31,11 @@ if (window.parent !== window) {
 
 bus.on('approve', function (req) {
     requests.remove(req);
-    approved.add(req.domain, [ req.domain ]);
+    approved.add(req);
+});
+
+bus.on('remove', function (app) {
+    approved.remove(app);
 });
 
 bus.on('reject', function (req) {
@@ -43,9 +47,8 @@ bus.on('request', function (req) {
 });
 
 var profiles = require('./profiles.js')('#settings table.profiles');
-var requests = require('./requests.js')('#settings table.requests');
-var approved = require('./table.js')('#settings table.approved');
 
+var requests = require('./requests.js')('#settings table.requests');
 requests.on('approve', function (req) {
     apps.approve(req, 'default');
 });
@@ -54,14 +57,17 @@ requests.on('reject', function (req) {
     apps.reject(req);
 });
 
+var approved = require('./approved.js')('#settings table.approved');
+approved.on('remove', function (app) {
+    apps.remove(app);
+});
+
 apps.requests(function (err, reqs) {
     reqs.forEach(function (req) { requests.add(req) });
 });
 
 apps.approved('default', function (err, xapps) {
-    xapps.forEach(function (x) {
-        approved.add(x.domain, [ x.domain, x.profile ]);
-    });
+    xapps.forEach(function (x) { approved.add(x) });
 });
 
 keys.list(function (err, profs) {
