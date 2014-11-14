@@ -12,10 +12,6 @@ else {
 }
 
 var bus = require('page-bus')();
-bus.on('_connect', function (u) {
-    console.log('connection!', u);
-});
-
 var level = require('level-browserify');
 var db = level('keybear', { valueEncoding: 'json' });
 

@@ -61,9 +61,13 @@ Apps.prototype.handle = function (msg, origin) {
 };
 
 Apps.prototype.getStatus = function (domain, cb) {
-    this.db.get('request!' + domain, function (err, res) {
-        if (res) return cb(null, 'pending');
-        else cb(null, false)
+    var self = this;
+    self.db.get('app!' + domain, function (err, res) {
+        if (res) return cb(null, 'approved')
+        self.db.get('request!' + domain, function (err, res) {
+            if (res) return cb(null, 'pending');
+            else cb(null, false)
+        });
     });
 };
 
@@ -83,8 +87,11 @@ Apps.prototype.approve = function (req, profile, cb) {
     this.db.batch([
         {
             type: 'put',
-            key: 'app!' + req.domain + '!' + profile,
-            value: { permissions: req.permissions }
+            key: 'app!' + req.domain,
+            value: {
+                profile: profile,
+                permissions: req.permissions
+            }
         },
         { type: 'del', key: 'request!' + req.domain }
     ], done);
@@ -122,7 +129,7 @@ Apps.prototype.approved = function (profile, cb) {
     function write (row, enc, next) {
         rows.push({
             domain: row.key.split('!')[1],
-            profile: row.key.split('!')[2],
+            profile: row.value.profile,
             permissions: row.value.permissions
         });
         next();
