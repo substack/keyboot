@@ -14,10 +14,10 @@ function KB (href, opts) {
     
     var perms = defined(opts.permissions, []);
     this.sequence = 0;
-    this.href = href;
+    this.href = /^https?:/.test(href) ? href : location.protocol + '//' + href;
     
     var seq = this.sequence;
-    this.frame = createIframe(href, function (frame) {
+    this.frame = createIframe(this.href, function (frame) {
         self._post({
             sequence: seq,
             action: 'request',
