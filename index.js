@@ -2,6 +2,7 @@ var EventEmitter = require('events').EventEmitter;
 var inherits = require('inherits');
 var defined = require('defined');
 var has = require('has');
+var RPC = require('frame-rpc');
 
 module.exports = KB;
 inherits(KB, EventEmitter);
@@ -13,67 +14,36 @@ function KB (href, opts) {
     if (!opts) opts = {};
     
     var perms = defined(opts.permissions, []);
-    this.sequence = 0;
     this.href = /^https?:/.test(href) ? href : location.protocol + '//' + href;
     
-    var seq = this.sequence;
+    var methods = {
+        emit: function () { self.emit.apply(self, arguments) }
+    };
+    
     this.frame = createIframe(this.href, function (frame) {
-        self._post({
-            sequence: seq,
-            action: 'request',
-            permissions: perms
-        });
+        self.rpc = RPC(window, frame.contentWindow, href, methods);
+        self.rpc.call('request', { permissions: perms });
     });
     
-    window.addEventListener('message', function (ev) {
-        if (!ev.data || typeof ev.data !== 'object') return;
-        if (!has(ev.data, 'keyboot')) return;
-        if (!ev.data.keyboot || typeof ev.data.keyboot !== 'object') return;
-        self._onmessage(ev.data.keyboot);
+    this.approved = false;
+    this.on('approve', function () {
+        self.approved = true;
+    });
+    this.on('revoke', function () {
+        self.approved = false;
+    });
+    this.on('reject', function () {
+        self.approved = false;
     });
 }
 
-KB.prototype._post = function (request) {
-    this.frame.contentWindow.postMessage({ keyboot: request }, this.href);
-};
+KB.prototype.sign = defer(function (text, cb) {
+    this.rpc.call('sign', text, cb);
+});
 
-KB.prototype._onmessage = function (data) {
-    if (data.sequence === 0) {
-        if (data.response === 'approved') {
-            this.emit('approve');
-        }
-        else if (data.response === 'rejected') {
-            this.emit('reject');
-        }
-        else if (data.response === 'pending') {
-            this.emit('pending');
-        }
-        else if (data.response === 'revoke') {
-            this.emit('revoke');
-        }
-        return;
-    }
-    else this.emit('reply_' + data.sequence, data);
-};
-
-KB.prototype.sign = function (text, cb) {
-    var seq = ++ this.sequence;
-    this.once('reply_' + seq, function (data) {
-        if (data.response === 'error') {
-            cb(data.message)
-        }
-        else cb(null, data.result)
-    });
-    this._post({
-        action: 'sign',
-        sequence: seq,
-        data: text
-    });
-};
-
-KB.prototype.id = function (cb) {
-    // todo
-};
+KB.prototype.id = defer(function (cb) {
+    this.rpc.call('id', cb);
+});
 
 KB.prototype.close = function () {
     document.body.removeChild(this.frame);
@@ -90,3 +60,13 @@ function createIframe (src, cb) {
     document.body.appendChild(iframe);
     return iframe;
 }
+
+function defer (f) {
+    return function () {
+        var self = this;
+        var args = arguments;
+        if (self.approved) return g();
+        self.once('approved', g);
+        function g () { f.apply(self, args) }
+    };
+} 

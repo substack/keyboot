@@ -18,16 +18,17 @@ var has = require('has');
 
 var keys = require('./keys.js')(db, bus, subtle);
 var apps = require('./apps.js')(db, bus);
-var rpc = require('./rpc.js')(bus, apps, keys, subtle);
 
-if (window.parent !== window) {
-    window.addEventListener('message', function (ev) {
-        if (!ev.data || !has(ev.data, 'keyboot')) return;
-        if (!ev.data.keyboot || typeof ev.data.keyboot !== 'object') return;
-        rpc.handle(ev.data.keyboot, ev.origin);
-    });
-    return;
-}
+var rpc = window.parent !== window
+    ? require('./rpc.js')({
+        origin: document.referrer,
+        bus: bus,
+        apps: apps,
+        keys: keys,
+        subtle: subtle
+    })
+    : null
+;
 
 bus.on('approve', function (req) {
     requests.remove(req);

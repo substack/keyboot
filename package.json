@@ -10,20 +10,24 @@
     "class-list": "~0.1.1",
     "defined": "~0.0.0",
     "ecstatic": "~0.5.6",
+    "frame-rpc": "^1.1.0",
     "hyperglue": "~1.3.3",
     "inherits": "~2.0.1",
+    "isarray": "~0.0.1",
     "level-browserify": "~0.18.1",
     "page-bus": "~1.0.2",
     "sha.js": "~2.2.7",
     "spinner-browserify": "~0.1.0",
-    "through2": "~0.6.3",
-    "isarray": "~0.0.1"
+    "through2": "~0.6.3"
   },
   "devDependencies": {
     "tape": "^3.0.0"
   },
   "scripts": {
-    "test": "tape test/*.js"
+    "test": "tape test/*.js",
+    "watch": "watchify app/browser.js -dv -o app/static/bundle.js",
+    "build": "browserify app/browser.js -o app/static/bundle.js",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
