@@ -42,6 +42,7 @@ Remote.prototype.request = function (req, cb) {
     self.apps.getStatus(self.origin, function (err, status) {
         if (err) return cb(err);
         else if (status === 'pending') {
+            self.rpc.call('emit', 'pending');
             cb(null, status);
         }
         else if (status === 'approved') {
@@ -50,8 +51,9 @@ Remote.prototype.request = function (req, cb) {
         }
         else if (status === false) {
             self.apps.saveRequest(req, self.origin, function (err) {
-                if (err) cb(err)
-                else cb(null, 'pending')
+                if (err) return cb(err);
+                cb(null, 'pending');
+                self.rpc.call('emit', 'pending');
             });
         }
         else cb(null, status)
