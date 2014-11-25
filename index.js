@@ -41,8 +41,8 @@ KB.prototype.sign = defer(function (text, cb) {
     this.rpc.call('sign', text, cb);
 });
 
-KB.prototype.id = defer(function (cb) {
-    this.rpc.call('id', cb);
+KB.prototype.fingerprint = defer(function (cb) {
+    this.rpc.call('fingerprint', cb);
 });
 
 KB.prototype.publicKey = defer(function (cb) {
@@ -70,7 +70,7 @@ function defer (f) {
         var self = this;
         var args = arguments;
         if (self.approved) return g();
-        self.once('approved', g);
+        self.once('approve', g);
         function g () { f.apply(self, args) }
     };
 } 
