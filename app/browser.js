@@ -11,6 +11,16 @@ else {
     classList(document.querySelector('#splash .generate')).remove('hide');
 }
 
+(function () {
+    var hboot = require('hyperboot/rpc');
+    var elems = document.querySelectorAll('.configure-versions');
+    for (var i = 0; i < elems.length; i++) {
+        elems[i].addEventListener('click', function (ev) {
+            hboot.toggle()
+        });
+    }
+})();
+
 var bus = require('page-bus')();
 var level = require('level-browserify');
 var db = level('keybear', { valueEncoding: 'json' });
