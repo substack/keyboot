@@ -53,6 +53,21 @@ h1 {
   padding: 20px;
 }
 
+button.configure-versions {
+  float: right;
+  background-color: rgb(160,110,200);
+  padding: 15px;
+  color: white;
+  font-weight: bold;
+  border-radius: 8px;
+  border-width: 0px;
+}
+
+button.configure-versions:hover {
+  cursor: pointer;
+  background-color: rgb(180,130,220);
+}
+
 h2 {
   color: rgb(100,40,130);
   padding: 5px;
