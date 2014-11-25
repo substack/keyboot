@@ -89,7 +89,7 @@ Remote.prototype.sign = function (text, cb) {
     
     function handleSign (sign) {
         sign.then(function (result) {
-            // TODO: add domain wrapper
+            // TODO: per-domain validation functions
             cb(null, new Uint8Array(result));
         });
         sign.catch(function (err) { cb(err) });
