@@ -8,7 +8,7 @@ var path = require('path');
 
 var argv = minimist(process.argv.slice(2), {
     alias: { d: 'dir', h: 'help', v: [ 'verbose', 'version' ] },
-    default: { d: process.cwd() }
+    default: { d: path.join(process.cwd(), 'hyperdata') }
 });
 
 if (argv._[0] === 'help' || argv.help) {

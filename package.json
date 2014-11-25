@@ -1,6 +1,6 @@
 {
   "name": "keyboot",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "single sign-on offline key server using asymmetric crypto in the browser",
   "main": "index.js",
   "bin": {
@@ -17,7 +17,6 @@
     "isarray": "~0.0.1",
     "level-browserify": "~0.18.1",
     "minimist": "^1.1.0",
-    "onchange": "0.0.2",
     "page-bus": "~1.0.2",
     "sha.js": "~2.2.7",
     "spinner-browserify": "~0.1.0",
@@ -26,15 +25,18 @@
   "devDependencies": {
     "browserify": "^6.3.3",
     "html-inline": "^1.1.0",
+    "onchange": "~0.0.2",
     "tape": "^3.0.0",
     "watchify": "^2.1.1"
   },
   "scripts": {
     "test": "tape test/*.js",
-    "watch": "watchify app/browser.js -dv -o app/static/bundle.js",
-    "build-js": "browserify app/browser.js -o app/static/bundle.js",
-    "build-html": "html-inline",
-    "start-dev": "ecstatic app/static"
+    "watch-js": "watchify app/browser.js -dv -o app/static/bundle.js",
+    "watch": "npm run watch-js & onchange app/static/index.html app/static/*.css -- npm run build-html",
+    "build": "browserify app/browser.js -o app/static/bundle.js",
+    "release": "npm run build && html-inline app/static/index.html | hyperboot release -n keyboot",
+    "start-dev": "ecstatic app/static",
+    "start": "node bin/cmd.js server"
   },
   "repository": {
     "type": "git",
