@@ -5,13 +5,29 @@ in the browser with [hyperboot](http://hyperboot.org) for caching
 
 # example
 
-# roadmap
+# methods
 
-* multiple profiles
-* add/remove individual capabilities before approving
-* store keys encrypted in localstorage for sign in/out
-* upload encrypted keys to a user-chosen server for backup and multiple devices
-* queue mode where all operations must be explicitly approved
-* per-domain validation functions
-* encryption with a second keypair
-* key ring of other public keys to verify messages
+To build applications
+
+# install
+
+With [npm](https://npmjs.org), to get the library do:
+
+```
+$ npm install keyboot
+```
+
+and to get the keyboot command do:
+
+```
+$ npm install -g keyboot
+```
+
+or you can fetch a pre-built version of the browser library with
+[browserify cdn](http://wzrd.in):
+
+[http://wzrd.in/standalone/keyboot@latest](http://wzrd.in/standalone/keyboot@latest)
+
+# license
+
+MIT
