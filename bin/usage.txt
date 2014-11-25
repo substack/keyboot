@@ -1,0 +1,6 @@
+keyboot server { -p PORT, -d DIR, --verbose }
+
+  Start a keyboot server on PORT, writing hyperboot files to DIR.
+  
+  If --verbose, print each http request.
+
