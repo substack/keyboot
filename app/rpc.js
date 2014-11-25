@@ -3,7 +3,9 @@ var RPC = require('frame-rpc');
 module.exports = function (opts) {
     var rpc = RPC(window, window.parent, opts.origin, {
         request: function () { r.request.apply(r, arguments) },
-        sign: function () { r.sign.apply(r, arguments) }
+        sign: function () { r.sign.apply(r, arguments) },
+        fingerprint: function () { r.fingerprint.apply(r, arguments) },
+        publicKey: function () { r.publicKey.apply(r, arguments) }
     });
     var r = new Remote(opts, rpc);
     return rpc;
@@ -92,4 +94,32 @@ Remote.prototype.sign = function (text, cb) {
         });
         sign.catch(function (err) { cb(err) });
     }
+};
+
+Remote.prototype.fingerprint = function (cb) {
+    var self = this;
+    self.apps.get(self.origin, function (err, value) {
+        if (err) return cb(err);
+        if (!value || value.permissions.indexOf('fingerprint') < 0) {
+            return cb(new Error('insufficient permissions for fingerprint'));
+        }
+        self.keys.load(value.profile, function (err, keys) {
+            if (err) return cb(err)
+            else cb(null, keys.hash)
+        });
+    });
+};
+
+Remote.prototype.publicKey = function (cb) {
+    var self = this;
+    self.apps.get(self.origin, function (err, value) {
+        if (err) return cb(err);
+        if (!value || value.permissions.indexOf('publicKey') < 0) {
+            return cb(new Error('insufficient permissions for publicKey'));
+        }
+        self.keys.load(value.profile, function (err, keys) {
+            if (err) return cb(err)
+            else cb(null, keys.public)
+        });
+    });
 };

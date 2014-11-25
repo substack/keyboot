@@ -45,6 +45,10 @@ KB.prototype.id = defer(function (cb) {
     this.rpc.call('id', cb);
 });
 
+KB.prototype.publicKey = defer(function (cb) {
+    this.rpc.call('publicKey', cb);
+});
+
 KB.prototype.close = function () {
     document.body.removeChild(this.frame);
     this.emit('close');
