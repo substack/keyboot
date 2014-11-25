@@ -14,3 +14,4 @@ in the browser with [hyperboot](http://hyperboot.org) for caching
 * queue mode where all operations must be explicitly approved
 * per-domain validation functions
 * encryption with a second keypair
+* key ring of other public keys to verify messages

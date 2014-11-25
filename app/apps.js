@@ -25,6 +25,7 @@ Apps.prototype.get = function (domain, cb) {
 };
 
 Apps.prototype.saveRequest = function (req, domain, cb) {
+    req.domain = domain;
     this.db.put('request!' + domain, req, cb);
     this.bus.emit('request', req);
 };
