@@ -128,7 +128,7 @@ function showSplash () {
         showSettings();
     });
     
-    var button = splash.querySelector('button');
+    var button = splash.querySelector('button.generate');
     button.addEventListener('click', function (ev) {
         button.style.display = 'none';
         
