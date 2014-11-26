@@ -1,6 +1,6 @@
 {
   "name": "keyboot",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "single sign-on offline key server using asymmetric crypto in the browser",
   "main": "index.js",
   "bin": {
