@@ -86,6 +86,19 @@ the remote keyboot app.
 This is a good time to show the user a link to the keyboot url so they can
 approve the application.
 
+# usage
+
+This package ships with a `keyboot` command for quickly starting up a server:
+
+```
+keyboot server { -p PORT, -d DIR, --verbose }
+
+  Start a keyboot server on PORT, writing hyperboot files to DIR.
+  
+  If --verbose, print each http request.
+
+```
+
 # install
 
 With [npm](https://npmjs.org), to get the library do:
