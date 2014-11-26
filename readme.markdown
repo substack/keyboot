@@ -5,6 +5,13 @@ in the browser with [hyperboot](http://hyperboot.org) for caching
 
 # example
 
+To get your own keyboot server up and running, just do:
+
+```
+$ npm install -g keyboot
+$ keyboot server -p 8000
+```
+
 For a full working example, consult:
 
 * [http://keyboot.hyperboot.org](http://keyboot.hyperboot.org)
