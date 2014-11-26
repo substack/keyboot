@@ -1,14 +1,27 @@
 var RPC = require('frame-rpc');
 
 module.exports = function (opts) {
-    var rpc = RPC(window, window.parent, opts.origin, {
-        request: function () { r.request.apply(r, arguments) },
-        sign: function () { r.sign.apply(r, arguments) },
-        fingerprint: function () { r.fingerprint.apply(r, arguments) },
-        publicKey: function () { r.publicKey.apply(r, arguments) }
-    });
-    var r = new Remote(opts, rpc);
-    return rpc;
+    for (var p = window; p !== p.parent; p = p.parent) (function (p) {
+        helloRPC(p);
+    })(p);
+    
+    function helloRPC (p) {
+        var rpc = RPC(p, p.parent, '*', {});
+        var ownOrigin = location.protocol + '//' + location.host;
+        rpc.call('hello', ownOrigin, function (origin) {
+            createRPC(p, origin);
+        });
+    }
+    
+    function createRPC (p, origin) {
+        var rpc = RPC(p, p.parent, origin, {
+            request: function () { r.request.apply(r, arguments) },
+            sign: function () { r.sign.apply(r, arguments) },
+            fingerprint: function () { r.fingerprint.apply(r, arguments) },
+            publicKey: function () { r.publicKey.apply(r, arguments) }
+        });
+        var r = new Remote(opts, rpc);
+    }
 };
 
 function Remote (opts, rpc) {

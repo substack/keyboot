@@ -31,7 +31,6 @@ var apps = require('./apps.js')(db, bus);
 
 var rpc = window.parent !== window
     ? require('./rpc.js')({
-        origin: document.referrer,
         bus: bus,
         apps: apps,
         keys: keys,
