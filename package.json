@@ -4,7 +4,7 @@
   "description": "single sign-on offline key server using asymmetric crypto in the browser",
   "main": "index.js",
   "bin": {
-    "keyboot": "node bin/cmd.js"
+    "keyboot": "bin/cmd.js"
   },
   "dependencies": {
     "class-list": "~0.1.1",
