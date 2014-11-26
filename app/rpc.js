@@ -14,6 +14,7 @@ module.exports = function (opts) {
     }
     
     function createRPC (p, origin) {
+        opts.origin = origin;
         var rpc = RPC(p, p.parent, origin, {
             request: function () { r.request.apply(r, arguments) },
             sign: function () { r.sign.apply(r, arguments) },
