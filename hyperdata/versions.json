@@ -1,0 +1,12 @@
+[
+  {
+    "hash": "851a527610b673156997cd98b3a023fc19cfe5d43a03d932a677cf93c9aaa927",
+    "version": "2.0.0",
+    "message": "initial public release"
+  },
+  {
+    "boot": true,
+    "hash": "48d24ea51d1251173c8b52244ffac3110d241040ed579b708ec2322198090ce6",
+    "version": "2.0.6"
+  }
+]
