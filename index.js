@@ -28,6 +28,9 @@ function KB (href, opts) {
                 self.rpc.call('request', { permissions: perms });
             }
         });
+        self.once('close', function () {
+            hrpc.destroy();
+        });
     });
     
     this.approved = false;
