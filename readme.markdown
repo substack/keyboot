@@ -14,8 +14,7 @@ $ keyboot server -p 8000
 
 For a full working example, consult:
 
-* [http://keyboot.hyperboot.org](http://keyboot.hyperboot.org)
-* [http://keyboot-example-app.hyperboot.org](http://keyboot-example-app.hyperboot.org)
+* [https://82a90170090c6899e5cf4b8bc83233cae8e2225a.htmlb.in/](https://82a90170090c6899e5cf4b8bc83233cae8e2225a.htmlb.in/)
 
 and the [keyboot-example-app](https://github.com/substack/keyboot-example-app)
 source code.
