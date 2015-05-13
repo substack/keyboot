@@ -7,7 +7,7 @@ var fs = require('fs');
 var path = require('path');
 
 var argv = minimist(process.argv.slice(2), {
-    alias: { d: 'dir', h: 'help', v: [ 'verbose', 'version' ] },
+    alias: { p: 'port', d: 'dir', h: 'help', v: [ 'verbose', 'version' ] },
     default: { d: path.join(process.cwd(), 'hyperdata') }
 });
 
